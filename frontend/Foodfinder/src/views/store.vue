@@ -28,7 +28,7 @@
       </div>
 
       <div class="cart">
-        <h3>My Cart</h3>
+        <h3>My Cart ({{ cartStore.totalItems }} items)</h3>
         <div v-if="cartStore.items.length === 0" class="cart-empty">
           Your cart is empty
         </div>
@@ -36,14 +36,14 @@
           <div v-for="item in cartStore.items" :key="item.id" class="cart-item">
             <div>
               <h4>{{ item.name }}</h4>
-              <p>₱{{ item.price }} x {{ item.quantity }}</p>
+              <p>₱{{ item.price.toFixed(2) }} x {{ item.quantity }}</p>
             </div>
             <button @click="removeFromCart(item)" class="remove-button">
               <i class="fas fa-trash"></i>
             </button>
           </div>
           <div class="cart-total">
-            <div>Total: ₱{{ cartStore.totalPrice }}</div>
+            <div>Total: ₱{{ cartStore.totalPrice.toFixed(2) }}</div>
             <button @click="addToOrder" id="orderButton" class="add-to-order-button">Add to My Order</button>
           </div>
         </div>
@@ -109,6 +109,7 @@ const addToCart = (product) => {
     id: product.id,
     name: product.name,
     price: product.price,
+    quantity: 1,
     storeId: route.params.storeId,
     storeName: props.storeName,
     image: product.image
@@ -141,7 +142,7 @@ function getImageUrl(name) {
     if (name.startsWith('/')) {
       return name;
     }
-    return new URL(`/src/assets/${name}`, import.meta.url).href;
+    return new URL(`../assets/${name}`, import.meta.url).href;
   } catch (error) {
     console.error("Error resolving image:", name, error);
     return '';
@@ -520,3 +521,4 @@ function getImageUrl(name) {
   }
 }
 </style>
+

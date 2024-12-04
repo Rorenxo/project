@@ -13,7 +13,7 @@ export const useCartStore = defineStore('cart', {
     addItem(item) {
       const existingItem = this.items.find(i => i.id === item.id && i.storeId === item.storeId)
       if (existingItem) {
-        existingItem.quantity = item.quantity
+        existingItem.quantity += item.quantity
       } else {
         this.items.push({ ...item })
       }
@@ -38,6 +38,20 @@ export const useCartStore = defineStore('cart', {
       if (this.appliedCoupon) {
         this.coupons[this.appliedCoupon].used = false;
         this.appliedCoupon = null;
+      }
+    },
+    incrementItem(itemId, storeId) {
+      const item = this.items.find(i => i.id === itemId && i.storeId === storeId)
+      if (item) {
+        item.quantity++
+      }
+    },
+    decrementItem(itemId, storeId) {
+      const item = this.items.find(i => i.id === itemId && i.storeId === storeId)
+      if (item && item.quantity > 1) {
+        item.quantity--
+      } else if (item && item.quantity === 1) {
+        this.removeItem(itemId, storeId)
       }
     },
   },

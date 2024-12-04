@@ -25,16 +25,14 @@
               <p class="item-store">From: {{ item.storeName }}</p>
             </div>
           </div>
-          <div class="item-price">₱{{ item.price }}</div>
+          <div class="item-price">₱{{ item.price.toFixed(2) }}</div>
           <div class="item-quantity">
-          
+            <button @click="decrementItem(item)" class="quantity-btn">-</button>
             <span>{{ item.quantity }}</span>
-      
+            <button @click="incrementItem(item)" class="quantity-btn">+</button>
           </div>
-          <div class="item-total">₱{{ item.price * item.quantity }}</div>
-          <button @click="removeFromCart(item)" class="remove-btn">
-            <i class="fas fa-times"></i>
-          </button>
+          <div class="item-total">₱{{ (item.price * item.quantity).toFixed(2) }}</div>
+          <button @click="removeFromCart(item)" class="remove-btn">×</button>
         </div>
       </div>
 
@@ -42,11 +40,15 @@
         <h2>Order Summary</h2>
         <div class="summary-row">
           <span>Subtotal</span>
-          <span>₱{{ cartStore.totalPrice }}</span>
+          <span>₱{{ cartStore.totalPrice.toFixed(2) }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Total Items</span>
+          <span>{{ cartStore.totalItems }}</span>
         </div>
         <div class="summary-row">
           <span>Shipping</span>
-          <span>0</span>
+          <span>₱0.00</span>
         </div>
         <div class="coupon-code">
           <input v-model="couponCode" placeholder="Enter coupon code" class="coupon-input" />
@@ -112,6 +114,13 @@ const removeFromCart = (item) => {
   cartStore.removeItem(item.id, item.storeId)
 }
 
+const incrementItem = (item) => {
+  cartStore.incrementItem(item.id, item.storeId)
+}
+
+const decrementItem = (item) => {
+  cartStore.decrementItem(item.id, item.storeId)
+}
 
 const closeCheckoutPrompt = () => {
   showCheckoutPrompt.value = false
@@ -148,6 +157,7 @@ const checkout = async () => {
       const orderData = {
         items: cartStore.items,
         totalPrice: cartStore.totalPrice,
+        totalItems: cartStore.totalItems,
         discountedTotal: cartStore.appliedCoupon ? cartStore.discountedTotalPrice : null,
         paymentMethod: paymentMethod.value,
       }
@@ -175,25 +185,23 @@ const checkout = async () => {
     }
   }
 }
-
-
 </script>
 
 <style scoped>
 .back-button-x {
   position: absolute;
-  top: 1rem; /* Adjust based on your layout */
-  left: 3rem; /* Adjust based on your layout */
+  top: 1rem;
+  left: 3rem;
   font-size: 1.5rem;
   font-weight: bold;
-  color: #000000; /* Red color for a clear indication */
+  color: #000000;
   cursor: pointer;
   background: none;
   border: none;
   outline: none;
 }
 .back-button-x:hover {
-  color: #dc2626; /* Darker red on hover */
+  color: #dc2626;
 }
 .back-button-x:focus {
   outline: none;
@@ -262,25 +270,7 @@ const checkout = async () => {
 .item-quantity {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-}
-
-.quantity-btn {
-  width: 24px;
-  height: 24px;
-  border: 1px solid #e2e8f0;
-  border-radius: 4px;
-  background: white;
-  cursor: pointer;
-}
-
-.quantity-btn:hover {
-  background: #f8fafc;
-}
-
-.quantity-btn:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
+  justify-content: center;
 }
 
 .remove-btn {
@@ -409,7 +399,7 @@ const checkout = async () => {
 }
 
 .checkout-btn:disabled {
-  background: #94a3b8;
+  background: #94a3bd;
   cursor: not-allowed;
 }
 
@@ -457,6 +447,29 @@ const checkout = async () => {
 .discounted-price s {
   color: #64748b;
   margin-right: 0.5rem;
+}
+
+.quantity-btn {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  margin: 0 0.5rem;
+}
+
+.quantity-btn:hover {
+  background: #f8fafc;
+}
+
+.quantity-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 @media (max-width: 768px) {
